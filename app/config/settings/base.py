@@ -10,26 +10,50 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 import json
+import numbers
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ROOT_DIR = os.path.dirname(BASE_DIR)
+import sys
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ROOT_DIR = os.path.dirname(BASE_DIR)
 SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
 SECRETS_BASE = os.path.join(SECRETS_DIR, 'base.json')
-secrets_base = json.loads(open(SECRETS_BASE, 'rt').read())
+SECRETS_LOCAL = os.path.join(SECRETS_DIR, 'local.json')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = secrets_base['SECRET_KEY']
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+secrets = json.loads(open(SECRETS_BASE, 'rt').read())
 
 
-# Application definition
+def set_config(obj, module_name=None, start=False):
+    def eval_obj(obj):
+        if isinstance(obj, numbers.Number) or (
+                isinstance(obj, str) and obj.isdigit()):
+            return obj
+        try:
+            return eval(obj)
+        except NameError:
+            return obj
+        except Exception as e:
+            print(f'Cannot eval object({obj}), Exception: {e}')
+            return obj
+
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            if isinstance(value, dict) or isinstance(value, list):
+                set_config(value)
+            else:
+                obj[key] = eval(value)
+            if start:
+                setattr(sys.modules[module_name], key, value)
+    elif isinstance(obj, list):
+        for index, item in enumerate(obj):
+            obj[index] = eval(item)
+
+
+set_config(secrets, module_name=__name__, start=True)
+
+STATIC_URL = '/static/'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,6 +62,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -68,20 +94,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
@@ -100,22 +112,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-
-STATIC_URL = '/static/'
