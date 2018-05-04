@@ -22,6 +22,7 @@ SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
 SECRETS_BASE = os.path.join(SECRETS_DIR, 'base.json')
 SECRETS_LOCAL = os.path.join(SECRETS_DIR, 'local.json')
 SECRETS_DEV = os.path.join(SECRETS_DIR, 'dev.json')
+SECRETS_PRODUCTION = os.path.join(SECRETS_DIR, 'production.json')
 
 secrets = json.loads(open(SECRETS_BASE, 'rt').read())
 
@@ -70,6 +71,14 @@ def set_config(obj, module_name=None, start=False):
 set_config(secrets, module_name=__name__, start=True)
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
+
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    STATIC_DIR,
+]
 
 AUTH_USER_MODEL = 'members.User'
 
