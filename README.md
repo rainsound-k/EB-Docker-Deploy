@@ -107,7 +107,7 @@ FROM    <사용자명/<저장소명>:base
       "AWS_ACCESS_KEY_ID": "<AWS access key (Permission: S3)>",
       "AWS_SECRET_ACCESS_KEY": "<AWS secret access key>",
       "AWS_STORAGE_BUCKET_NAME": "<AWS S3 Bucket name>",
-      "AWS_S3_REGION_NAME": "<AWS Bucket region",
+      "AWS_S3_REGION_NAME": "ap-northeast-2",
       "AWS_S3_SIGNATURE_VERSION": "s3v4",
       "AWS_DEFAULT_ACL": "private"
     }
@@ -123,7 +123,7 @@ FROM    <사용자명/<저장소명>:base
       "HOST": "<AWS RDS end-point>",
       "NAME": "<DB name>",
       "USER": "<DB username>",
-      "PASSWORD": "<DB user password",
+      "PASSWORD": "<DB user password>",
       "PORT": 5432
     }
   }
